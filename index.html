@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Provably Fair Verifier</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 16px;
+        background: #fafbfc;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px #0001;
+      }
+      h1 {
+        font-size: 1.3em;
+        margin-bottom: 1em;
+      }
+      label {
+        display: block;
+        margin-top: 1em;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 1.5em;
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+      }
+      .result {
+        margin-top: 1.5em;
+        font-weight: bold;
+      }
+      .match {
+        color: green;
+      }
+      .no-match {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Death.fun Hash Verifier</h1>
+    <form id="verifier-form">
+      <label>
+        Algorithm Version
+        <select id="version" name="version" required>
+          <option value="v1">v1</option>
+        </select>
+      </label>
+      <label
+        >Row Tile Counts
+        <textarea id="rows" name="rows" rows="3" required></textarea>
+      </label>
+      <label
+        >Seed
+        <input type="text" id="seed" name="seed" required />
+      </label>
+      <label
+        >Hash
+        <input type="text" id="hash" name="hash" required />
+      </label>
+      <button type="submit">Verify</button>
+    </form>
+    <div class="result" id="result"></div>
+    <pre
+      id="rows-config"
+      style="
+        margin-top: 1em;
+        background: #f4f4f4;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 0.95em;
+        overflow-x: auto;
+      "
+    ></pre>
+    <script src="verifier.js"></script>
+  </body>
+</html>
