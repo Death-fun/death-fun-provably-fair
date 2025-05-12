@@ -32,7 +32,7 @@ async function getDeathTileIndex(seed, rowIndex, totalTiles) {
 function calculateRowMultipliers(tileCounts) {
   const multipliers = [];
   let currentMultiplier = 1;
-  const HOUSE_EDGE = 0.025;
+  const HOUSE_EDGE = 0.05;
   for (let i = 0; i < tileCounts.length; i++) {
     const tiles = tileCounts[i];
     const baseMultiplier = 1 / (1 - 1 / tiles);
