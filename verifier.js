@@ -101,6 +101,11 @@ async function verify(event) {
     null,
     2
   );
+  renderVisual(rows);
+  visualView.style.display = "";
+  rawView.style.display = "none";
+  toggleBtn.textContent = "Show Raw JSON";
+  showingVisual = true;
 }
 
 function showResult(msg, match) {
@@ -119,3 +124,38 @@ window.addEventListener("DOMContentLoaded", () => {
   );
   if (allFilled) verify();
 });
+
+function renderVisual(rows) {
+  const container = document.getElementById("visual-view");
+  container.innerHTML = "";
+  if (!Array.isArray(rows)) return;
+  rows.forEach((row, i) => {
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "row";
+    for (let t = 0; t < row.tiles; t++) {
+      const tile = document.createElement("div");
+      tile.className = "tile" + (t === row.deathTileIndex ? " death" : "");
+      tile.title = t === row.deathTileIndex ? "Death Tile" : "";
+      rowDiv.appendChild(tile);
+    }
+    container.appendChild(rowDiv);
+  });
+}
+
+// Toggle logic
+const toggleBtn = document.getElementById("toggle-view");
+const visualView = document.getElementById("visual-view");
+const rawView = document.getElementById("rows-config");
+let showingVisual = true;
+toggleBtn.onclick = function () {
+  showingVisual = !showingVisual;
+  if (showingVisual) {
+    visualView.style.display = "";
+    rawView.style.display = "none";
+    toggleBtn.textContent = "Show Raw JSON";
+  } else {
+    visualView.style.display = "none";
+    rawView.style.display = "";
+    toggleBtn.textContent = "Show Visual";
+  }
+};
