@@ -43,9 +43,14 @@ function calculateRowMultipliers(tileCounts) {
   return multipliers;
 }
 
-async function reconstructRows(tileCounts, seed) {
+async function reconstructRows(tileCounts, seed, version) {
   const multipliers = calculateRowMultipliers(tileCounts);
   const rows = [];
+  // Choose the correct death tile function based on version
+  const getDeathTileIndex =
+    version === "2" || version === "v2"
+      ? getDeathTileIndexV2
+      : getDeathTileIndexV1;
   for (let i = 0; i < tileCounts.length; i++) {
     const tiles = tileCounts[i];
     const multiplier = multipliers[i];
@@ -129,7 +134,21 @@ function renderVisual(rows) {
   const container = document.getElementById("visual-view");
   container.innerHTML = "";
   if (!Array.isArray(rows)) return;
-  rows.forEach((row, i) => {
+
+  // Reverse the rows array to show bottom row first
+  const reversedRows = [...rows].reverse();
+
+  reversedRows.forEach((row, i) => {
+    // Create row container to hold label and tiles
+    const rowContainer = document.createElement("div");
+    rowContainer.className = "row-container";
+
+    // Create row label (bottom row is 1, top row is highest number)
+    const rowLabel = document.createElement("div");
+    rowLabel.className = "row-label";
+    rowLabel.textContent = (rows.length - i).toString();
+
+    // Create row div for tiles
     const rowDiv = document.createElement("div");
     rowDiv.className = "row";
     for (let t = 0; t < row.tiles; t++) {
@@ -138,7 +157,11 @@ function renderVisual(rows) {
       tile.title = t === row.deathTileIndex ? "Death Tile" : "";
       rowDiv.appendChild(tile);
     }
-    container.appendChild(rowDiv);
+
+    // Add label and row to container
+    rowContainer.appendChild(rowLabel);
+    rowContainer.appendChild(rowDiv);
+    container.appendChild(rowContainer);
   });
 }
 
