@@ -20,6 +20,20 @@ function autofillFromParams() {
   });
 }
 
+// Parse selected tiles from URL parameter
+function getSelectedTiles() {
+  const selectedTilesParam = getParam("selectedTiles");
+  if (!selectedTilesParam) return [];
+
+  try {
+    // Decode URL-encoded string and split by comma
+    const decoded = decodeURIComponent(selectedTilesParam);
+    return decoded.split(",").map((s) => parseInt(s.trim(), 10));
+  } catch {
+    return [];
+  }
+}
+
 // Deterministically generates a death tile index for a row
 async function getDeathTileIndex(seed, rowIndex, totalTiles) {
   const hashSource = `${seed}-row${rowIndex}`;
@@ -43,14 +57,9 @@ function calculateRowMultipliers(tileCounts) {
   return multipliers;
 }
 
-async function reconstructRows(tileCounts, seed, version) {
+async function reconstructRows(tileCounts, seed) {
   const multipliers = calculateRowMultipliers(tileCounts);
   const rows = [];
-  // Choose the correct death tile function based on version
-  const getDeathTileIndex =
-    version === "2" || version === "v2"
-      ? getDeathTileIndexV2
-      : getDeathTileIndexV1;
   for (let i = 0; i < tileCounts.length; i++) {
     const tiles = tileCounts[i];
     const multiplier = multipliers[i];
@@ -106,7 +115,10 @@ async function verify(event) {
     null,
     2
   );
-  renderVisual(rows);
+
+  // Get selected tiles and render visual
+  const selectedTiles = getSelectedTiles();
+  renderVisual(rows, selectedTiles);
   visualView.style.display = "";
   rawView.style.display = "none";
   toggleBtn.textContent = "Show Raw JSON";
@@ -130,31 +142,50 @@ window.addEventListener("DOMContentLoaded", () => {
   if (allFilled) verify();
 });
 
-function renderVisual(rows) {
+function renderVisual(rows, selectedTiles = []) {
   const container = document.getElementById("visual-view");
   container.innerHTML = "";
   if (!Array.isArray(rows)) return;
 
-  // Reverse the rows array to show bottom row first
-  const reversedRows = [...rows].reverse();
-
-  reversedRows.forEach((row, i) => {
+  rows.forEach((row, i) => {
     // Create row container to hold label and tiles
     const rowContainer = document.createElement("div");
     rowContainer.className = "row-container";
 
-    // Create row label (bottom row is 1, top row is highest number)
+    // Create row label (row numbers start from 1)
     const rowLabel = document.createElement("div");
     rowLabel.className = "row-label";
-    rowLabel.textContent = (rows.length - i).toString();
+    rowLabel.textContent = (i + 1).toString();
 
     // Create row div for tiles
     const rowDiv = document.createElement("div");
     rowDiv.className = "row";
+
     for (let t = 0; t < row.tiles; t++) {
       const tile = document.createElement("div");
-      tile.className = "tile" + (t === row.deathTileIndex ? " death" : "");
-      tile.title = t === row.deathTileIndex ? "Death Tile" : "";
+      const isDeath = t === row.deathTileIndex;
+      const isSelected = selectedTiles[i] === t;
+
+      // Set tile classes
+      let tileClass = "tile";
+      if (isDeath) tileClass += " death";
+      if (isSelected) tileClass += " selected";
+
+      tile.className = tileClass;
+
+      // Set title
+      let title = "";
+      if (isDeath && isSelected) {
+        title = "Selected Death Tile";
+        // Add skull icon
+        tile.innerHTML = "💀";
+      } else if (isDeath) {
+        title = "Death Tile";
+      } else if (isSelected) {
+        title = "Selected Tile";
+      }
+      tile.title = title;
+
       rowDiv.appendChild(tile);
     }
 
