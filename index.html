@@ -167,11 +167,156 @@
         margin-right: 1em;
         font-size: 0.8em;
       }
+
+      /* Laser Party Grid Styles */
+      .laser-party-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .step-info {
+        text-align: center;
+        font-weight: bold;
+        color: #a2e634;
+        font-size: 1.1em;
+      }
+
+      .grid-display {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+      }
+
+      .laser-grid {
+        display: grid;
+        gap: 2px;
+        padding: 8px;
+        background: #1a1a1a;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 350px;
+      }
+
+      .grid-cell {
+        aspect-ratio: 1;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8em;
+        transition: all 0.3s ease;
+        min-width: 20px;
+        min-height: 20px;
+      }
+
+      .grid-cell.death-highlight {
+        background: #e74c3c;
+        border-color: #c0392b;
+        color: white;
+        font-weight: bold;
+        animation: pulse 1.5s infinite;
+      }
+
+      .grid-cell.selected-highlight {
+        background: #a2e634;
+        border-color: #8bc34a;
+        color: #111;
+        font-weight: bold;
+      }
+
+      .grid-cell.death-highlight.selected-highlight {
+        background: #e74c3c;
+        border: 2px solid #a2e634;
+        color: white;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      .nav-controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .nav-btn {
+        background: #181818;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 8px 16px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.2s ease;
+        margin-top: 0;
+      }
+
+      .nav-btn:hover:not(:disabled) {
+        background: #333;
+        border-color: #555;
+      }
+
+      .nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Override visual-view height restriction for laser party */
+      #visual-view:has(.laser-party-container) {
+        max-height: none;
+        overflow-y: visible;
+      }
+
+      /* Game selector styles */
+      .game-selector-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 16px 0;
+        padding: 12px 0;
+        border-top: 1px solid #333;
+        border-bottom: 1px solid #333;
+      }
+
+      .game-selector-container label {
+        font-size: 0.9em;
+        font-weight: bold;
+        color: #a2e634;
+        margin: 0;
+      }
+
+      #game-selector {
+        background: #181818;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 4px 8px;
+        color: #fff;
+        font-size: 0.9em;
+        cursor: pointer;
+      }
+
+      #game-selector:focus {
+        outline: none;
+        border-color: #a2e634;
+      }
     </style>
   </head>
   <body>
     <div class="main-container">
-      <h1>Death.fun Hash Verifier</h1>
+      <h1 id="page-title">Hash Verifier</h1>
       <p style="font-size: 0.9em">
         This tool verifies the hash of your game to prove death tiles were were
         chosen before the game began.
@@ -185,25 +330,17 @@
         >
       </div>
       <hr />
+      <div class="game-selector-container">
+        <label for="game-selector">Game</label>
+        <select id="game-selector">
+          <option value="deathFun">Death.fun</option>
+          <option value="laser_party">Laser Party</option>
+        </select>
+      </div>
       <form id="verifier-form">
-        <label>
-          Algorithm Version
-          <select id="version" name="version" required>
-            <option value="v1">v1</option>
-          </select>
-        </label>
-        <label
-          >Row Tile Counts
-          <textarea id="rows" name="rows" rows="3" required></textarea>
-        </label>
-        <label
-          >Seed
-          <input type="text" id="seed" name="seed" required />
-        </label>
-        <label
-          >Hash
-          <input type="text" id="hash" name="hash" required />
-        </label>
+        <div id="dynamic-form-fields">
+          <!-- Form fields will be dynamically generated here -->
+        </div>
         <button type="submit">Verify</button>
       </form>
       <div class="result" id="result"></div>
@@ -225,7 +362,15 @@
           Show Raw JSON
         </button>
       </div>
-      <script src="verifier.js"></script>
+      <!-- Load shared utilities first -->
+      <script src="shared.js"></script>
+
+      <!-- Load game modules -->
+      <script src="games/deathFun/deathFun.js"></script>
+      <script src="games/laser_party/laser_party.js"></script>
+
+      <!-- Load main orchestrator -->
+      <script src="main.js"></script>
     </div>
   </body>
 </html>
