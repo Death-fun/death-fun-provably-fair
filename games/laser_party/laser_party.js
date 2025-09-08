@@ -17,6 +17,10 @@ class LaserPartyGame extends BaseGame {
     return ["selectedTiles"];
   }
 
+  getDescription() {
+    return "This tool verifies the hash of your game to prove the order or lasered rows/columns were chosen before the game began.";
+  }
+
   // Parse selected tiles from URL parameter - Laser Party uses [row,col] pairs
   getSelectedTiles() {
     const selectedTilesParam = getParam("selectedTiles");
@@ -120,17 +124,6 @@ class LaserPartyGame extends BaseGame {
       seed: gameData.seed,
       selectedTiles: gameData.selectedTiles,
     };
-  }
-
-  // Generate hash from game state
-  async generateGameHash(gameState) {
-    const gameData = JSON.stringify({
-      version: gameState.version,
-      rows: gameState.rows,
-      seed: gameState.seed,
-    });
-    console.log("GAME DATA", gameData);
-    return "0x" + (await sha256Hex(gameData));
   }
 
   // Render the game - grid-based visualization for laser party

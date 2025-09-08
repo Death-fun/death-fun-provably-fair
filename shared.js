@@ -60,6 +60,11 @@ class BaseGame {
     return []; // Default: no optional params
   }
 
+  // Get description text for this game
+  getDescription() {
+    return "This tool verifies the hash of your game to prove the outcome was chosen before the game began."; // Default generic description
+  }
+
   // New method: Generate form fields HTML for this game
   getFormFieldsHTML() {
     throw new Error("getFormFieldsHTML() must be implemented");
@@ -74,7 +79,13 @@ class BaseGame {
   }
 
   async generateGameHash(gameState) {
-    throw new Error("generateGameHash() must be implemented");
+    // Default shared implementation - games can override if needed
+    const gameData = JSON.stringify({
+      version: gameState.version,
+      rows: gameState.rows || [], // Use 0 for games without rows (like dice)
+      seed: gameState.seed,
+    });
+    return "0x" + (await sha256Hex(gameData));
   }
 
   renderGame(gameState, container) {

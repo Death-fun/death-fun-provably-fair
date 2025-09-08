@@ -5,6 +5,7 @@ const GAMES = {
   deathFun: deathFunGame,
   death_race: deathFunGame, // Alias for deathFun
   laser_party: laserPartyGame,
+  dice: diceGame,
 };
 
 // Get the current game (default to deathFun for backward compatibility)
@@ -55,6 +56,14 @@ function generateFormFields() {
     const newTitle = `${gameDisplayName} Hash Verifier`;
     console.log("Setting page title to:", newTitle);
     titleElement.textContent = newTitle;
+  }
+
+  // Update description based on game
+  const descriptionElement = document.getElementById("game-description");
+  if (descriptionElement) {
+    const gameDescription = game.getDescription();
+    console.log("Setting description to:", gameDescription);
+    descriptionElement.textContent = gameDescription;
   }
 }
 
@@ -128,6 +137,21 @@ async function verify(event) {
 function initializeGameSelector() {
   const gameSelector = document.getElementById("game-selector");
   if (!gameSelector) return;
+
+  // Populate dropdown with games from registry
+  gameSelector.innerHTML = ""; // Clear existing options
+  Object.keys(GAMES).forEach((gameKey) => {
+    // Skip aliases (like death_race)
+    if (gameKey === "death_race") return;
+
+    const game = GAMES[gameKey];
+    const option = document.createElement("option");
+    option.value = gameKey;
+    option.textContent = game.getDisplayName
+      ? game.getDisplayName()
+      : game.getGameName();
+    gameSelector.appendChild(option);
+  });
 
   // Set initial value based on URL param or default to deathFun
   const urlGameType = getParam("game");

@@ -17,6 +17,10 @@ class DeathFunGame extends BaseGame {
     return ["selectedTiles"];
   }
 
+  getDescription() {
+    return "This tool verifies the hash of your game to prove death tiles were chosen before the game began.";
+  }
+
   // Parse selected tiles from URL parameter
   getSelectedTiles() {
     const selectedTilesParam = getParam("selectedTiles");
@@ -105,16 +109,6 @@ class DeathFunGame extends BaseGame {
       seed: gameData.seed,
       selectedTiles: gameData.selectedTiles,
     };
-  }
-
-  // Generate hash from game state
-  async generateGameHash(gameState) {
-    const gameData = JSON.stringify({
-      version: gameState.version,
-      rows: gameState.rows,
-      seed: gameState.seed,
-    });
-    return "0x" + (await sha256Hex(gameData));
   }
 
   // Render the game
